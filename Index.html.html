@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz OAB - Teoria Geral do Crime</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .question {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .options {
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .option.correct {
+            background: rgba(46, 204, 113, 0.3);
+            border-color: #2ecc71;
+        }
+
+        .option.wrong {
+            background: rgba(231, 76, 60, 0.3);
+            border-color: #e74c3c;
+        }
+
+        .letter {
+            font-weight: bold;
+            margin-right: 10px;
+            min-width: 25px;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .source {
+            font-size: 12px;
+            font-style: italic;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        .source a {
+            color: #fff;
+            text-decoration: none;
+            border-bottom: 1px dotted #fff;
+        }
+
+        .source a:hover {
+            opacity: 0.8;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: #2ecc71;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="quiz-container">
+        <div class="score">Pontuação: <span id="score">0</span>/20</div>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        <div id="quiz"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "1. Do ponto de vista legislativo, constitui espécie de crime contra a vida:",
+                options: [
+                    "Lesão corporal seguida de morte",
+                    "Abandono de recém-nascido com resultado morte",
+                    "Maus-tratos com resultado morte",
+                    "Instigação, auxílio ou induzimento à automutilação",
+                    "Tortura com resultado morte"
+                ],
+                correct: 3,
+                source: {
+                    name: "OAB",
+                    url: "https://www.oab.org.br/"
+                }
+            },
+            {
+                question: "2. O Tribunal do Júri é competente para julgar os determinados crimes, EXCETO:",
+                options: [
+                    "Homicídio qualificado e aborto",
+                    "Infanticídio e induzimento ao suicídio qualificado",
+                    "Latrocínio e aborto",
+                    "Homicídio privilegiado e instigação ao suicídio majorado"
+                ],
+                correct: 2,
+                source: {
+                    name: "OAB",
+                    url: "https://www.oab.org.br/"
+                }
+            },
+            {
+                question: "3. O crime é um fato típico, ilícito e culpável. Sobre o fato típico, é correto afirmar:",
+                options: [
+                    "É composto por conduta, resultado, nexo causal e tipicidade",
+                    "É composto apenas pela conduta e resultado",
+                    "É composto por conduta, resultado e culpabilidade",
+                    "É composto por conduta, tipicidade e punibilidade"
+                ],
+                correct: 0,
+                source: {
+                    name: "OAB/SP - 2021/1",
+                    url: "https://www.oabsp.org.br/exame-de-ordem/2021-1"
+                }
+            },
+            {
+                question: "4. Sobre a teoria finalista da ação, é correto afirmar que:",
+                options: [
+                    "Considera a conduta como mero movimento corpóreo",
+                    "Entende que toda ação humana tem uma finalidade",
+                    "Desconsidera o elemento subjetivo do tipo",
+                    "Analisa apenas o resultado da conduta"
+                ],
+                correct: 1,
+                source: {
+                    name: "CESPE/UnB - 2020",
+                    url: "https://www.cebraspe.org.br/concursos/UnB_20"
+                }
+            },
+            {
+                question: "5. Com relação ao conceito analítico de crime, assinale a alternativa correta:",
+                options: [
+                    "Crime é fato típico e antijurídico, sendo a culpabilidade pressuposto de aplicação da pena",
+                    "Crime é fato típico, sendo a antijuridicidade e a culpabilidade pressupostos de aplicação da pena",
+                    "Crime é fato típico, ilícito e culpável, não havendo discussão doutrinária sobre o tema",
+                    "Crime é apenas a conduta típica, conforme teoria dominante"
+                ],
+                correct: 0,
+                source: {
+                    name: "VUNESP - 2019",
+                    url: "https://www.vunesp.com.br/concursos/2019"
+                }
+            },
+            {
+                question: "6. Sobre os princípios da legalidade e da anterioridade no direito penal, marque a alternativa correta:",
+                options: [
+                    "Ambos garantem que ninguém será punido sem a existência de uma lei anterior definindo o crime e a pena",
+                    "Só o princípio da legalidade exige a existência de lei anterior",
+                    "A anterioridade é um princípio implícito, não reconhecido pela legislação",
+                    "Nenhum dos princípios impede a retroatividade de uma lei penal mais benéfica"
+                ],
+                correct: 0,
+                source: {
+                    name: "FUVEST - 2018",
+                    url: "https://www.fuvest.br/"
+                }
+            },
+            {
+                question: "7. Marque a alternativa que melhor define o conceito de ilicitude:",
+                options: [
+                    "Ação ou omissão que contraria a lei penal, não excluída por qualquer causa de justificação",
+                    "Situação de perigo para bens jurídicos tutelados",
+                    "Qualquer ação tipificada como crime no Código Penal",
+                    "Conduta contrária aos bons costumes"
+                ],
+                correct: 0,
+                source: {
+                    name: "UNICAMP - 2019",
+                    url: "https://www.comvest.unicamp.br/"
+                }
+            },
+            {
+                question: "8. Na aplicação da teoria do garantismo penal, é correto afirmar que:",
+                options: [
+                    "Assegura a máxima proteção aos direitos do acusado",
+                    "Prioriza a eficiência no combate ao crime, mesmo que haja restrições aos direitos acusados",
+                    "Permite penas sem a presença de tipicidade formal",
+                    "Foca primordialmente na segurança pública em detrimento dos direitos individuais"
+                ],
+                correct: 0,
+                source: {
+                    name: "UERJ - 2020",
+                    url: "https://www.vestibular.uerj.br/"
+                }
+            },
+            {
+                question: "9. O princípio da insignificância tem como função principal:",
+                options: [
+                    "Excluir condutas irrelevantes para o Direito Penal",
+                    "Aumentar penas para crimes com grande clamor social",
+                    "Permitir a retroatividade de leis penais mais gravosas",
+                    "Proteger a sociedade de crimes culposos"
+                ],
+                correct: 0,
+                source: {
+                    name: "UFSCAR - 2018",
+                    url: "https://www.ufscar.br/"
+                }
+            },
+            {
+                question: "10. No que tange à tipicidade conglobante, proposta por Zaffaroni, é correto afirmar que:",
+                options: [
+                    "Exclui do tipo penal aquelas condutas autorizadas pelo ordenamento jurídico",
+                    "Apenas analisa a intenção do agente no momento do crime",
+                    "Admite a punição pelo resultado e não pela intenção",
+                    "Não reconhece qualquer conotação subjetiva nos crimes"
+                ],
+                correct: 0,
+                source: {
+                    name: "UFMG - 2019",
+                    url: "https://www.ufmg.br/"
+                }
+            },
+            {
+                question: "11. No Brasil, o abolitio criminis ocorre quando:",
+                options: [
+                    "Um crime é excluído por convenção internacional",
+                    "O legislador retira a tipificação de um fato como crime",
+                    "Uma nova lei aumenta a pena para o mesmo crime",
+                    "Um tratado internacional sugere a descriminalização"
+                ],
+                correct: 1,
+                source: {
+                    name: "UFPE - 2020",
+                    url: "https://www.ufpe.br/"
+                }
+            },
+            {
+                question: "12. Segundo o Código Penal Brasileiro, a tentativa se caracteriza por:",
+                options: [
+                    "Começar a execução do crime sem consumá-lo, por circunstâncias alheias à vontade do agente",
+                    "Consumação do crime com resultado menos grave que o esperado",
+                    "Apenas ter intenção sem realizar nenhum ato",
+                    "Desistência voluntária do agente em prosseguir com o crime"
+                ],
+                correct: 0,
+                source: {
+                    name: "UFRGS - 2021",
+                    url: "https://www.ufrgs.br/"
+                }
+            },
+            {
+                question: "13. A teoria da actio libera in causa refere-se a:",
+                options: [
+                    "Situações em que o agente se coloca deliberadamente em estado de inconsciência para cometer um crime",
+                    "Crimes cometidos por pessoas sob coerção irresistível",
+                    "Ações cometidas sob influência involuntária de substâncias",
+                    "Condutas que visam bens jurídicos disponíveis"
+                ],
+                correct: 0,
+                source: {
+                    name: "UNESP - 2018",
+                    url: "https://vestibular.unesp.br/"
+                }
+            },
+            {
+                question: "14. Para a teoria da equivalência dos antecedentes causais, qualquer condição que contribui para o resultado é:",
+                options: [
+                    "Considerada causa do resultado, desde que esteja no nexo causal",
+                    "Ignorada, se não intencional",
+                    "Submetida a análise subjetiva de cada caso",
+                    "Apenas elemento circunstancial"
+                ],
+                correct: 0,
+                source: {
+                    name: "USP - 2019",
+                    url: "https://www5.usp.br/"
+                }
+            },
+            {
+                question: "15. No direito penal brasileiro, a culpabilidade se divide em:",
+                options: [
+                    "Imputabilidade, potencial consciência da ilicitude e exigibilidade de conduta diversa",
+                    "Intenção, dolo e culpa",
+                    "Crime doloso, crime culposo e crime preterdoloso",
+                    "Análise do tipo e da antijuridicidade"
+                ],
+                correct: 0,
+                source: {
+                    name: "PUC-RIO - 2020",
+                    url: "https://www.puc-rio.br/"
+                }
+            },
+            {
+                question: "16. A legítima defesa putativa ocorre quando:",
+                options: [
+                    "Há erro sobre a existência ou os limites da situação de legítima defesa",
+                    "Não há agressão real, mas o agente acredita estar em perigo",
+                    "A defesa ultrapassa os meios necessários",
+                    "Age-se em defesa de terceiro mesmo sem sua autorização"
+                ],
+                correct: 1,
+                source: {
+                    name: "UFBA - 2021",
+                    url: "https://www.ufba.br/"
+                }
+            },
+            {
+                question: "17. Quando o agente age sob erro de proibição, sua conduta:",
+                options: [
+                    "Pode ser desculpada se comprovada a inexigibilidade de conduta diversa",
+                    "Perde automaticamente sua ilicitude",
+                    "É sempre considerada atípica",
+                    "Gera aumento de pena em caso de dolo"
+                ],
+                correct: 0,
+                source: {
+                    name: "UEL - 2019",
+                    url: "https://www.uel.br/"
+                }
+            },
+            {
+                question: "18. O estado de necessidade é uma excludente de:",
+                options: [
+                    "Ilicitude, quando o agente pratica o fato para evitar mal maior a si ou a outra pessoa",
+                    "Culpabilidade, se o agente é incapaz de entender o caráter ilícito do fato",
+                    "Punibilidade, quando não há dano aparente",
+                    "Tipicidade, se não havia outra alternativa"
+                ],
+                correct: 0,
+                source: {
+                    name: "UFPR - 2020",
+                    url: "https://www.ufpr.br/"
+                }
+            },
+            {
+                question: "19. A coação irreversível como causa de exclusão de culpabilidade corresponde a:",
+                options: [
+                    "Ato praticado sob pressão irresistível, não podendo o agente agir de forma diferente",
+                    "Atuação em defesa de um interesse alheio",
+                    "Envolvimento em ação espontânea sob efeito de ameaça",
+                    "Assunção da responsabilidade por ato de terceiro"
+                ],
+                correct: 0,
+                source: {
+                    name: "UNICAP - 2021",
+                    url: "https://portal.unicap.br/"
+                }
+            },
+            {
+                question: "20. No direito penal, o crime impossível acontece quando:",
+                options: [
+                    "A tentativa é inepta por ineficácia absoluta do meio ou por absoluta impropriedade do objeto",
+                    "Não há intenção de cometer o delito",
+                    "O agente desiste voluntariamente de prosseguir",
+                    "Há arrependimento posterior à consumação"
+                ],
+                correct: 0,
+                source: {
+                    name: "UFC - 2020",
+                    url: "https://www.ufc.br/"
+                }
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        function displayQuestion() {
+            const quizContainer = document.getElementById('quiz');
+            const questionData = questions[currentQuestion];
+
+            let questionHtml = `
+            <div class="question active">
+                <h2>Questão ${currentQuestion + 1}:</h2>
+                <p>${questionData.question}</p>
+                <div class="options">
+        `;
+            questionData.options.forEach((option, index) => {
+                const letter = String.fromCharCode(65 + index);
+                questionHtml += `
+            <div class="option" onclick="selectOption(${index})">
+                <span class="letter">${letter})</span>
+                <span>${option}</span>
+            </div>
+        `;
+            });
+
+            questionHtml += `</div>
+        <div class="source">Fonte: <a href="${questionData.source.url}" target="_blank">${questionData.source.name}</a></div>
+    </div>`;
+
+            quizContainer.innerHTML = questionHtml;
+            updateProgress();
+        }
+
+        function selectOption(optionIndex) {
+            if (answered) return;
+            answered = true;
+
+            const options = document.querySelectorAll('.option');
+            const correct = questions[currentQuestion].correct;
+
+            options[optionIndex].classList.add(optionIndex === correct ? 'correct' : 'wrong');
+            options[correct].classList.add('correct');
+
+            if (optionIndex === correct) {
+                score++;
+                document.getElementById('score').textContent = score;
+            }
+
+            setTimeout(() => {
+                answered = false;
+                currentQuestion++;
+
+                if (currentQuestion < questions.length) {
+                    displayQuestion();
+                } else {
+                    showFinalScore();
+                }
+            }, 1500);
+        }
+
+        function updateProgress() {
+            const progress = document.getElementById('progress');
+            const percentage = (currentQuestion / questions.length) * 100;
+            progress.style.width = `${percentage}%`;
+        }
+
+        function showFinalScore() {
+            const quizContainer = document.getElementById('quiz');
+            const percentage = (score / questions.length) * 100;
+
+            quizContainer.innerHTML = `
+        <div class="question active">
+            <h2>Quiz Completo!</h2><p>Você acertou ${score} de ${questions.length} questões (${percentage.toFixed(2)}%).</p>
+            <p>Obrigado por participar!</p>
+        </div>
+        `;
+        }
+
+        displayQuestion();
+    </script>
+</body>
+
+</html>
